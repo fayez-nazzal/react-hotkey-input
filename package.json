@@ -3,10 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc --p ./tsconfig-build.json && vite build",
@@ -18,13 +22,12 @@
   },
   "author": "Fayez Nazzal <contact@fayez.io> (https://fayez.io)",
   "license": "MIT",
-  "homepage": "https://github.com/fayez-nazzal/@hotkey-input/react",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fayez-nazzal/@hotkey-input/react"
+    "url": "https://github.com/fayez-nazzal/react-hotkey-input"
   },
   "bugs": {
-    "url": "https://github.com/fayez-nazzal/@hotkey-input/react/issues"
+    "url": "https://github.com/fayez-nazzal/react-hotkey-input"
   },
   "peerDependencies": {
     "react": "^18.2.0",
