@@ -7,7 +7,7 @@ import {
 } from "react";
 import styles from "./styles.module.css";
 import { MODIFIER_KEYS } from "./constants";
-import { handleBackspace, isMac } from "./utils";
+import { handleBackspace, isLetter, isMac } from "./utils";
 
 interface IPropTypes {
   shortcut?: string;
@@ -89,11 +89,11 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           const newPressedKeys = new Set(pressedKeys);
 
           newPressedKeys.add(getKey(key));
-          const singleDigitKeys = Array.from(newPressedKeys).filter(
-            (key) => key.length === 1
+          const letterKeys = Array.from(newPressedKeys).filter(
+            isLetter
           );
 
-          if (singleDigitKeys.length > 1) {
+          if (letterKeys.length > 1) {
             return;
           }
 

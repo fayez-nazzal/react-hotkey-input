@@ -7,3 +7,5 @@ export const handleBackspace = (pressedKeys: Set<string>) => {
   newPressedKeys.delete(Array.from(pressedKeys).pop() || "");
   return newPressedKeys;
 };
+
+export const isLetter = (key: string) => key.length === 1 && key.match(/[a-z]/i);
