@@ -1,0 +1,53 @@
+.hotkey-input {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 9rem;
+    height: 2.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.hotkey-input:has(input:disabled) {
+    pointer-events: none;
+}
+
+.hotkey-input:focus-within {
+    border-color: royalblue;
+}
+
+.placeholder {
+    font-size: 13px;
+    font-weight: 500;
+    color: #cdcdcd;
+    position: absolute;
+    inset: 0;
+}
+
+.group-wrapper, .placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.group {
+    display: flex;
+}
+
+.group>* {
+    margin: 0 1px;
+}
+
+.kbd {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+    background-color: #f1f1f1;
+    color: #333;
+    padding: 1px 3px;
+    font-size: 14px;
+    font-weight: 500;
+}

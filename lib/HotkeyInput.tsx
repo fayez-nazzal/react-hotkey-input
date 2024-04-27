@@ -5,6 +5,9 @@ import {
   useRef,
   useState,
 } from "react";
+import styles from "./styles.module.css";
+import { MODIFIER_KEYS } from "./constants";
+import { handleBackspace, isMac } from "./utils";
 
 interface IPropTypes {
   shortcut?: string;
@@ -13,12 +16,11 @@ interface IPropTypes {
   className?: string;
   groupsWrapperClassName?: string;
   groupClassName?: string;
+  placeholderClassName?: string;
   kbdClassName?: string;
-  errorMessageClassName?: string;
   isValid?: (shortcut: string) => boolean;
-  errorMessage?: string;
-  unsavedMessage?: string;
-  unsavedMessageClassName?: string;
+  onInvalid?: (shortcut: string) => void;
+  disabled?: boolean;
 }
 
 type RefType = HTMLInputElement;
@@ -33,12 +35,12 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       groupsWrapperClassName,
       groupClassName,
       kbdClassName,
+      placeholderClassName,
       isValid,
-      errorMessage,
-      unsavedMessage,
-      unsavedMessageClassName,
+      onInvalid,
+      disabled
     },
-    forwardedRef,
+    forwardedRef
   ) => {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const internalRef = useRef<RefType>();
@@ -55,48 +57,50 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     };
 
     const getKey = (key: string) => {
-      const isMac = navigator.platform.includes("Mac");
-
-      if (key === " ") {
-        return "space";
+      switch (true) {
+        case key === " ":
+          return MODIFIER_KEYS.SPACE;
+        case /meta/i.test(key):
+          return isMac() ? MODIFIER_KEYS.CMD : MODIFIER_KEYS.META;
+        case /Alt/i.test(key):
+          return MODIFIER_KEYS.ALT;
+        case /Control/i.test(key):
+          return MODIFIER_KEYS.CTRL;
+        default:
+          return key.toLowerCase();
       }
-
-      if (key.match(/meta/i)) {
-        return isMac ? "cmd" : "meta";
-      }
-
-      if (key.match(/Alt/i)) {
-        return "alt";
-      }
-
-      if (key.match(/Control/i)) {
-        return "ctrl";
-      }
-
-      return key.toLowerCase();
     };
 
-    const onKeydown = (e: any) => {
+    const onKeydown = (e: React.KeyboardEvent) => {
       const { key } = e;
+      switch (key) {
+        case "Enter":
+          return;
 
-      if (key === "Enter") {
-        return;
+        case "Escape":
+          clearPressedKeys();
+          return;
+
+        case "Backspace":
+          setPressedKeys(handleBackspace(pressedKeys));
+          return;
+
+        default: {
+          const newPressedKeys = new Set(pressedKeys);
+
+          newPressedKeys.add(getKey(key));
+          const singleDigitKeys = Array.from(newPressedKeys).filter(
+            (key) => key.length === 1
+          );
+
+          if (singleDigitKeys.length > 1) {
+            return;
+          }
+
+          setPressedKeys(newPressedKeys);
+          e.preventDefault();
+        }
       }
-
-      if (key === "Escape") {
-        clearPressedKeys();
-        return;
-      }
-
-      const newPressedKeys = new Set(pressedKeys);
-      newPressedKeys.add(getKey(key));
-      setPressedKeys(newPressedKeys);
-      e.preventDefault();
-    };
-
-    const onKeyup = (e: any) => {
-      internalRef.current?.blur();
-      e.preventDefault();
     };
 
     const clearPressedKeys = () => {
@@ -113,10 +117,26 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       ? Array.from(pressedKeys).join("+")
       : defaultShortcut || "";
 
+    // restore to default shortcut
+    const onBlur = () => {
+      setPressedKeys(new Set(defaultShortcut?.split("+") || []));
+    };
+
     useEffect(() => {
       if (!hasPressedKeys) return;
       onChange?.(shortcut);
     }, [pressedKeys]);
+
+    useEffect(() => {
+      if (!isValid) return;
+
+      if (isValid(shortcut)) {
+        internalRef.current?.blur();
+        return;
+      }
+
+      onInvalid?.(shortcut);
+    }, [shortcut]);
 
     useEffect(() => {
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
@@ -128,19 +148,21 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     return (
       <div
-        className={`flex flex-col gap-2 w-32 h-10 border ${className}`}
+        className={`${styles["hotkey-input"]} ${className}`}
         onClick={onWrapperClick}
       >
+        {!shortcut && !disabled && (
+          <div className={`${styles["placeholder"]} ${placeholderClassName}`}>
+            {placeholder}
+          </div>
+        )}
+
         <div
-          className={`flex items-center p-1 groupsWrapperClassName ${groupsWrapperClassName}`}
+          className={`${styles["group-wrapper"]} ${styles["group-wrapper"]} ${groupsWrapperClassName}`}
         >
           {Array.from(pressedKeys).map((key, index) => (
-            <div className={`flex items-center gap-px ${groupClassName}`}>
-              <kbd
-                className={`px-1 py-0.5 rounded-md bg-gray-100 ${kbdClassName}`}
-              >
-                {key}
-              </kbd>
+            <div className={`${styles["group"]} ${groupClassName}`} key={key}>
+              <kbd className={`${styles["kbd"]} ${kbdClassName}`}>{key}</kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
           ))}
@@ -148,28 +170,15 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
         <input
           onKeyDown={onKeydown}
-          onKeyUp={onKeyup}
           onFocus={onInputFocus}
           ref={setRefs}
           value={shortcut}
           placeholder={placeholder}
-          className={className}
+          onBlur={onBlur}
           style={{ opacity: 0, width: 0, height: 0 }}
-          readOnly
+          disabled={disabled}
         />
-
-        {isValid && !isValid(shortcut) && (
-          <div className={`text-xs text-red-500 ${errorMessageClassName}`}>
-            {errorMessage}
-          </div>
-        )}
-
-        {unsavedMessage && (
-          <div className={`text-xs text-gray-500 ${unsavedMessageClassName}`}>
-            {unsavedMessage}
-          </div>
-        )}
       </div>
     );
-  },
+  }
 );
