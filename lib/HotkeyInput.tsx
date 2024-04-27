@@ -63,9 +63,9 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         case /meta/i.test(key):
           return isMac() ? MODIFIER_KEYS.CMD : MODIFIER_KEYS.META;
         case /Alt/i.test(key):
-          return MODIFIER_KEYS.ALT;
+          return isMac() ? MODIFIER_KEYS.OPTION : MODIFIER_KEYS.ALT;
         case /Control/i.test(key):
-          return MODIFIER_KEYS.CTRL;
+          return isMac() ? MODIFIER_KEYS.CTRL_MAC : MODIFIER_KEYS.CTRL;
         default:
           return key.toLowerCase();
       }

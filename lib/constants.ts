@@ -6,8 +6,10 @@ export const PLATFORM_TYPE = {
 
 export const MODIFIER_KEYS = {
   SPACE: "space",
-  CMD: "cmd",
+  CMD: "⌘",
   META: "meta",
   ALT: "alt",
   CTRL: "ctrl",
+  CTRL_MAC: "⌃",
+  OPTION: "option",
 };
