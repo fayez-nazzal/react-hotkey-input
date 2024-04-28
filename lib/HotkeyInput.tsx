@@ -128,8 +128,6 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     useEffect(() => {
       if (!hasPressedKeys) return;
-      const isSameAsDefault = shortcut === defaultShortcut;
-      if (isSameAsDefault) return;
       onChange?.(shortcut);
     }, [pressedKeys]);
 
