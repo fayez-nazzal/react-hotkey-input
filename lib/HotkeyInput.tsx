@@ -7,7 +7,7 @@ import {
 } from "react";
 import styles from "./styles.module.css";
 import { KEY_LABELS } from "./constants";
-import { handleBackspace, isLetter, isMac } from "./utils";
+import { getSortedKeys, handleBackspace, isLetter, isMac } from "./utils";
 
 interface IPropTypes {
   shortcut?: string | null;
@@ -159,7 +159,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         <div
           className={`${styles["group-wrapper"]} ${styles["group-wrapper"]} ${groupsWrapperClassName}`}
         >
-          {Array.from(pressedKeys).map((key, index) => (
+          {getSortedKeys(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
               <kbd className={`${styles["kbd"]} ${kbdClassName}`}>
                 {KEY_LABELS[(isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS] ||  KEY_LABELS[key] || key}
