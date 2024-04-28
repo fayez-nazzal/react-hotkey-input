@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import styles from "./styles.module.css";
-import { KEY_LABELS, MODIFIER_KEYS } from "./constants";
+import { KEY_LABELS } from "./constants";
 import { handleBackspace, isLetter, isMac } from "./utils";
 
 interface IPropTypes {
@@ -36,7 +36,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       groupClassName,
       kbdClassName,
       placeholderClassName,
-      disabled
+      disabled,
     },
     forwardedRef
   ) => {
@@ -58,17 +58,17 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     const getKey = (key: string) => {
       switch (true) {
         case key === " ":
-          return MODIFIER_KEYS.SPACE;
+          return "space";
         case /meta/i.test(key):
-          return isMac() ? MODIFIER_KEYS.CMD : MODIFIER_KEYS.META;
+          return isMac() ? "command" : "meta";
         case /Alt/i.test(key):
-          return isMac() ? MODIFIER_KEYS.OPTION : MODIFIER_KEYS.ALT;
+          return isMac() ? "option" : "alt";
         case /Control/i.test(key):
-          return isMac() ? MODIFIER_KEYS.CTRL_MAC : MODIFIER_KEYS.CTRL;
+          return "ctrl";
         case /Shift/i.test(key):
-          return MODIFIER_KEYS.SHIFT;
+          return "shift";
         case /CapsLock/i.test(key):
-          return MODIFIER_KEYS.CAPS_LOCK;
+          return "caps_lock";
         case /ArrowUp/i.test(key):
           return "up";
         case /ArrowDown/i.test(key):
@@ -80,11 +80,11 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     const onKeydown = (e: React.KeyboardEvent) => {
       const { key } = e;
-      
-      const newPressedKeys: typeof pressedKeys = shouldReset.current ? new Set() : new Set(pressedKeys);
-      const letterKeys = Array.from(newPressedKeys).filter(
-        isLetter
-      );
+
+      const newPressedKeys: typeof pressedKeys = shouldReset.current
+        ? new Set()
+        : new Set(pressedKeys);
+      const letterKeys = Array.from(newPressedKeys).filter(isLetter);
 
       switch (key) {
         case "Escape":
@@ -143,7 +143,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     const onKeyUp = () => {
       shouldReset.current = true;
-    }
+    };
 
     return (
       <div
@@ -161,7 +161,10 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         >
           {Array.from(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
-              <kbd className={`${styles["kbd"]} ${kbdClassName}`}>{KEY_LABELS[key] || key}</kbd>
+              <kbd className={`${styles["kbd"]} ${kbdClassName}`}>
+                {KEY_LABELS[(isMac() && KEY_LABELS[`${key}_mac`]) || key] ||
+                  key}
+              </kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
           ))}

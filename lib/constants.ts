@@ -4,21 +4,18 @@ export const PLATFORM_TYPE = {
   LINUX: "Linux",
 };
 
-export const MODIFIER_KEYS = {
-  SPACE: "space",
-  CMD: "⌘",
-  META: "meta",
-  ALT: "alt",
-  CTRL: "ctrl",
-  CTRL_MAC: "⌥",
-  OPTION: "option",
-  SHIFT: "⇧",
-  CAPS_LOCK: "⇪",
-};
-
 export const KEY_LABELS: Record<string, string> = {
   "up": "↑",
   "down": "↓",
   "left": "←",
   "right": "→",
+  space: "space",
+  command: "⌘",
+  meta: "meta",
+  alt: "alt",
+  ctrl: "ctrl",
+  ctrl_mac: "⌥",
+  option: "⌥",
+  shift: "⇧",
+  caps_lock: "⇪",
 }
