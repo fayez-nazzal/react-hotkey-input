@@ -10,16 +10,15 @@ import { MODIFIER_KEYS } from "./constants";
 import { handleBackspace, isLetter, isMac } from "./utils";
 
 interface IPropTypes {
-  shortcut?: string;
+  shortcut?: string | null;
   onChange?: (shortcut: string) => void;
+  onDismiss?: () => void;
   placeholder?: string;
   className?: string;
   groupsWrapperClassName?: string;
   groupClassName?: string;
   placeholderClassName?: string;
   kbdClassName?: string;
-  isValid?: (shortcut: string) => boolean;
-  onInvalid?: (shortcut: string) => void;
   disabled?: boolean;
 }
 
@@ -30,14 +29,13 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     {
       shortcut: defaultShortcut,
       onChange,
+      onDismiss,
       placeholder,
       className,
       groupsWrapperClassName,
       groupClassName,
       kbdClassName,
       placeholderClassName,
-      isValid,
-      onInvalid,
       disabled
     },
     forwardedRef
@@ -120,23 +118,15 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     // restore to default shortcut
     const onBlur = () => {
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
+      onDismiss?.();
     };
 
     useEffect(() => {
       if (!hasPressedKeys) return;
+      const isSameAsDefault = shortcut === defaultShortcut;
+      if (isSameAsDefault) return;
       onChange?.(shortcut);
     }, [pressedKeys]);
-
-    useEffect(() => {
-      if (!isValid) return;
-
-      if (isValid(shortcut)) {
-        internalRef.current?.blur();
-        return;
-      }
-
-      onInvalid?.(shortcut);
-    }, [shortcut]);
 
     useEffect(() => {
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
