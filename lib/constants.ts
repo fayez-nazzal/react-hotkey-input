@@ -18,4 +18,5 @@ export const KEY_LABELS: Record<string, string> = {
   option_mac: "⌥",
   shift: "⇧",
   caps_lock: "⇪",
+  enter: "↩︎",
 }
