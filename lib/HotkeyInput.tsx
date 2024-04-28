@@ -162,7 +162,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           {Array.from(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
               <kbd className={`${styles["kbd"]} ${kbdClassName}`}>
-                {KEY_LABELS[(isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS] || key}
+                {KEY_LABELS[(isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS] ||  KEY_LABELS[key] || key}
               </kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
