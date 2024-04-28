@@ -162,8 +162,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           {Array.from(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
               <kbd className={`${styles["kbd"]} ${kbdClassName}`}>
-                {KEY_LABELS[(isMac() && KEY_LABELS[`${key}_mac`]) || key] ||
-                  key}
+                {KEY_LABELS[(isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS] || key}
               </kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
@@ -180,6 +179,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           style={{ opacity: 0, width: 0, height: 0 }}
           disabled={disabled}
           onKeyUp={onKeyUp}
+          readOnly
         />
       </div>
     );
