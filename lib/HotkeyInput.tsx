@@ -150,7 +150,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         className={`${styles["hotkey-input"]} ${className}`}
         onClick={onWrapperClick}
       >
-        {!shortcut && !disabled && (
+        {(!hasPressedKeys || !shortcut) && !disabled && (
           <div className={`${styles["placeholder"]} ${placeholderClassName}`}>
             {placeholder}
           </div>
