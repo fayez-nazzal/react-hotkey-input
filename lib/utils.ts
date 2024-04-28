@@ -9,3 +9,4 @@ export const handleBackspace = (pressedKeys: Set<string>) => {
 };
 
 export const isLetter = (key: string) => key.length === 1 && key.match(/[a-z]/i);
+  

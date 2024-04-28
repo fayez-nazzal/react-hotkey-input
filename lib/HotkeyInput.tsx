@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import styles from "./styles.module.css";
-import { MODIFIER_KEYS } from "./constants";
+import { KEY_LABELS, MODIFIER_KEYS } from "./constants";
 import { handleBackspace, isLetter, isMac } from "./utils";
 
 interface IPropTypes {
@@ -41,6 +41,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     forwardedRef
   ) => {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+    const shouldReset = useRef<boolean>(true);
     const internalRef = useRef<RefType>();
 
     const setRefs = (instance: RefType | null) => {
@@ -64,6 +65,14 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           return isMac() ? MODIFIER_KEYS.OPTION : MODIFIER_KEYS.ALT;
         case /Control/i.test(key):
           return isMac() ? MODIFIER_KEYS.CTRL_MAC : MODIFIER_KEYS.CTRL;
+        case /Shift/i.test(key):
+          return MODIFIER_KEYS.SHIFT;
+        case /CapsLock/i.test(key):
+          return MODIFIER_KEYS.CAPS_LOCK;
+        case /ArrowUp/i.test(key):
+          return "up";
+        case /ArrowDown/i.test(key):
+          return "down";
         default:
           return key.toLowerCase();
       }
@@ -71,34 +80,30 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     const onKeydown = (e: React.KeyboardEvent) => {
       const { key } = e;
-      switch (key) {
-        case "Enter":
-          return;
+      
+      const newPressedKeys: typeof pressedKeys = shouldReset.current ? new Set() : new Set(pressedKeys);
+      const letterKeys = Array.from(newPressedKeys).filter(
+        isLetter
+      );
 
+      switch (key) {
         case "Escape":
           clearPressedKeys();
-          return;
+          break;
 
         case "Backspace":
-          setPressedKeys(handleBackspace(pressedKeys));
-          return;
+          handleBackspace(pressedKeys);
+          break;
 
         default: {
-          const newPressedKeys = new Set(pressedKeys);
-
-          newPressedKeys.add(getKey(key));
-          const letterKeys = Array.from(newPressedKeys).filter(
-            isLetter
-          );
-
-          if (letterKeys.length > 1) {
-            return;
+          if (!isLetter(key) || letterKeys.length === 0) {
+            newPressedKeys.add(getKey(key));
           }
-
-          setPressedKeys(newPressedKeys);
-          e.preventDefault();
         }
       }
+
+      shouldReset.current = false;
+      setPressedKeys(newPressedKeys);
     };
 
     const clearPressedKeys = () => {
@@ -136,6 +141,10 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       internalRef.current?.focus();
     };
 
+    const onKeyUp = () => {
+      shouldReset.current = true;
+    }
+
     return (
       <div
         className={`${styles["hotkey-input"]} ${className}`}
@@ -152,7 +161,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         >
           {Array.from(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
-              <kbd className={`${styles["kbd"]} ${kbdClassName}`}>{key}</kbd>
+              <kbd className={`${styles["kbd"]} ${kbdClassName}`}>{KEY_LABELS[key] || key}</kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
           ))}
@@ -167,6 +176,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           onBlur={onBlur}
           style={{ opacity: 0, width: 0, height: 0 }}
           disabled={disabled}
+          onKeyUp={onKeyUp}
         />
       </div>
     );

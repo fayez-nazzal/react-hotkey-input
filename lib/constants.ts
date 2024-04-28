@@ -10,6 +10,15 @@ export const MODIFIER_KEYS = {
   META: "meta",
   ALT: "alt",
   CTRL: "ctrl",
-  CTRL_MAC: "⌃",
+  CTRL_MAC: "⌥",
   OPTION: "option",
+  SHIFT: "⇧",
+  CAPS_LOCK: "⇪",
 };
+
+export const KEY_LABELS: Record<string, string> = {
+  "up": "↑",
+  "down": "↓",
+  "left": "←",
+  "right": "→",
+}
