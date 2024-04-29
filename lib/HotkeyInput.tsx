@@ -12,7 +12,6 @@ import { getSortedKeys, handleBackspace, isLetter, isMac } from "./utils";
 interface IPropTypes {
   shortcut?: string | null;
   onChange?: (shortcut: string) => void;
-  onDismiss?: () => void;
   placeholder?: string;
   className?: string;
   groupsWrapperClassName?: string;
@@ -20,6 +19,8 @@ interface IPropTypes {
   placeholderClassName?: string;
   kbdClassName?: string;
   disabled?: boolean;
+  onFocus?: () => void;
+  onDismiss?: () => void;
 }
 
 type RefType = HTMLInputElement;
@@ -29,7 +30,6 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     {
       shortcut: defaultShortcut,
       onChange,
-      onDismiss,
       placeholder,
       className,
       groupsWrapperClassName,
@@ -37,6 +37,8 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       kbdClassName,
       placeholderClassName,
       disabled,
+      onFocus,
+      onDismiss
     },
     forwardedRef
   ) => {
@@ -116,6 +118,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     const onInputFocus = () => {
       clearPressedKeys();
+      onFocus?.();
     };
 
     const hasPressedKeys = pressedKeys.size > 0;
