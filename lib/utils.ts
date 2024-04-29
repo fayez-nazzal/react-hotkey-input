@@ -10,14 +10,19 @@ export const handleBackspace = (pressedKeys: Set<string>) => {
 
 export const isLetter = (key: string) => key.length === 1 && key.match(/[a-z]/i);
 
+export const isArrow = (key: string) => key === "up" || key === "down" || key === "left" || key === "right";
+
 export const getSortedKeys = (pressedKeys: Set<string>) => {
   const keys = Array.from(pressedKeys);
+
   keys.sort((a, b) => {
+    if (isLetter(a) && !isLetter(b)) return 1;
+    if (isArrow(a) && !isArrow(b)) return 1;
     if (KEY_LABELS[a] || KEY_LABELS[`${a}_mac`]) return -1;
     if (KEY_LABELS[b] || KEY_LABELS[`${b}_mac`]) return 1;
-    if (isLetter(a) && !isLetter(b)) return -1;
-    if (!isLetter(a) && isLetter(b)) return 1;
+    if (KEY_LABELS[b] || KEY_LABELS[`${b}_mac`]) return 1;
     return a.localeCompare(b);
   });
+  
   return keys;
 }

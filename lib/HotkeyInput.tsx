@@ -73,6 +73,10 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           return "up";
         case /ArrowDown/i.test(key):
           return "down";
+        case /ArrowLeft/i.test(key):
+          return "left";
+        case /ArrowRight/i.test(key):
+          return "right";
         default:
           return key.toLowerCase();
       }
