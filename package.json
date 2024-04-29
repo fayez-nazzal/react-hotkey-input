@@ -16,7 +16,7 @@
     "build": "tsc --p ./tsconfig-build.json && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build && git push origin main",
+    "prepublishOnly": "npm version patch && npm run build && git push origin main",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
