@@ -21,6 +21,11 @@ interface IPropTypes {
   disabled?: boolean;
   onFocus?: () => void;
   onDismiss?: () => void;
+  isEdited?: boolean;
+  EditedIcon?: React.ElementType;
+  editedIconClassName?: string;
+  withCaret?: boolean;
+  caretClassName?: string;
 }
 
 type RefType = HTMLInputElement;
@@ -38,13 +43,19 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       placeholderClassName,
       disabled,
       onFocus,
-      onDismiss
+      onDismiss,
+      isEdited,
+      EditedIcon = () => null,
+      editedIconClassName,
+      withCaret,
+      caretClassName,
     },
     forwardedRef
   ) => {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const shouldReset = useRef<boolean>(true);
     const internalRef = useRef<RefType>();
+    const [isFocused, setIsFocused] = useState<boolean>(false);
 
     const setRefs = (instance: RefType | null) => {
       if (!instance) return;
@@ -119,6 +130,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     const onInputFocus = () => {
       clearPressedKeys();
       onFocus?.();
+      setIsFocused(true);
     };
 
     const hasPressedKeys = pressedKeys.size > 0;
@@ -131,6 +143,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     const onBlur = () => {
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
       onDismiss?.();
+      setIsFocused(false);
     };
 
     useEffect(() => {
@@ -172,7 +185,13 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
           ))}
+
+          {withCaret && isFocused && (
+              <div className={`${styles["caret"]} ${caretClassName}`}></div>
+          )}
         </div>
+
+        {isEdited && <EditedIcon className={`${styles["edited-icon"]} ${editedIconClassName}`} />}
 
         <input
           onKeyDown={onKeydown}

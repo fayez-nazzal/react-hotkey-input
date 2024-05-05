@@ -26,5 +26,8 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {
     placeholder: 'Type a shortcut...',
+    withCaret: true,
+    EditedIcon: (props) => <span {...props}>✏️</span>,
+    isEdited: true,
   },
 };
