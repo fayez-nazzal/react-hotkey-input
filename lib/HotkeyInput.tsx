@@ -13,6 +13,7 @@ interface IPropTypes {
   shortcut?: string | null;
   onChange?: (shortcut: string) => void;
   placeholder?: string;
+  focusedPlaceholder?: string;
   className?: string;
   groupsWrapperClassName?: string;
   groupClassName?: string;
@@ -36,6 +37,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       shortcut: defaultShortcut,
       onChange,
       placeholder,
+      focusedPlaceholder,
       className,
       groupsWrapperClassName,
       groupClassName,
@@ -106,6 +108,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       switch (key) {
         case "Escape":
           clearPressedKeys();
+          internalRef.current?.blur();
           break;
 
         case "Backspace":
@@ -121,6 +124,8 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
       shouldReset.current = false;
       setPressedKeys(newPressedKeys);
+
+      // disable animations
     };
 
     const clearPressedKeys = () => {
@@ -163,6 +168,8 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       shouldReset.current = true;
     };
 
+    const displayPlaceholder = isFocused ? focusedPlaceholder : placeholder;
+
     return (
       <div
         className={`${styles["hotkey-input"]} ${className}`}
@@ -170,7 +177,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       >
         {(!hasPressedKeys || !shortcut) && !disabled && (
           <div className={`${styles["placeholder"]} ${placeholderClassName}`}>
-            {placeholder}
+            {displayPlaceholder}
           </div>
         )}
 
@@ -180,25 +187,38 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           {getSortedKeys(pressedKeys).map((key, index) => (
             <div className={`${styles["group"]} ${groupClassName}`} key={key}>
               <kbd className={`${styles["kbd"]} ${kbdClassName}`}>
-                {KEY_LABELS[(isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS] ||  KEY_LABELS[key] || key}
+                {KEY_LABELS[
+                  (isMac() ? `${key}_mac` : key) as keyof typeof KEY_LABELS
+                ] ||
+                  KEY_LABELS[key] ||
+                  key}
               </kbd>
               {index !== pressedKeys.size - 1 && <span>+</span>}
             </div>
           ))}
 
           {withCaret && isFocused && (
-              <div className={`${styles["caret"]} ${caretClassName}`}></div>
+            <div
+              className={`${styles["caret"]} ${caretClassName}`}
+              style={{
+                animationDuration: hasPressedKeys ? "0s" : undefined,
+              }}
+            ></div>
           )}
         </div>
 
-        {isEdited && <EditedIcon className={`${styles["edited-icon"]} ${editedIconClassName}`} />}
+        {isEdited && (
+          <EditedIcon
+            className={`${styles["edited-icon"]} ${editedIconClassName}`}
+          />
+        )}
 
         <input
           onKeyDown={onKeydown}
           onFocus={onInputFocus}
           ref={setRefs}
           value={shortcut}
-          placeholder={placeholder}
+          placeholder={displayPlaceholder}
           onBlur={onBlur}
           style={{ opacity: 0, width: 0, height: 0 }}
           disabled={disabled}
