@@ -99,6 +99,8 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
     const onKeydown = (e: React.KeyboardEvent) => {
       const { key } = e;
+      e.preventDefault();
+      e.stopPropagation();
 
       const newPressedKeys: typeof pressedKeys = shouldReset.current
         ? new Set()
@@ -111,15 +113,13 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           clearPressedKeys();
           internalRef.current?.blur();
           onDismiss?.();
-          break;
+          return;
 
         case "Backspace":
           handleBackspace(pressedKeys);
           break;
 
         default: {
-          e.preventDefault();
-          e.stopPropagation();
           if (!isLetter(key) || letterKeys.length === 0) {
             newPressedKeys.add(getKey(key));
           }
