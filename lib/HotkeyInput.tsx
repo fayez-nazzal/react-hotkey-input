@@ -118,6 +118,8 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
           break;
 
         default: {
+          e.preventDefault();
+          e.stopPropagation();
           if (!isLetter(key) || letterKeys.length === 0) {
             newPressedKeys.add(getKey(key));
           }
