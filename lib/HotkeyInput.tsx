@@ -22,6 +22,7 @@ interface IPropTypes {
   disabled?: boolean;
   onFocus?: () => void;
   onDismiss?: () => void;
+  onConfirm?: () => void;
   isEdited?: boolean;
   EditedIcon?: React.ElementType;
   editedIconClassName?: string;
@@ -46,6 +47,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       disabled,
       onFocus,
       onDismiss,
+      onConfirm,
       isEdited,
       EditedIcon = () => null,
       editedIconClassName,
@@ -109,10 +111,14 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
       switch (key) {
         case "Escape":
-        case "Enter":
           clearPressedKeys();
           internalRef.current?.blur();
           onDismiss?.();
+          return;
+
+        case "Enter":
+          hasPressedKeys && onConfirm?.();
+          internalRef.current?.blur();
           return;
 
         case "Backspace":
