@@ -107,16 +107,14 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
 
       switch (key) {
         case "Escape":
+        case "Enter":
           clearPressedKeys();
           internalRef.current?.blur();
+          onDismiss?.();
           break;
 
         case "Backspace":
           handleBackspace(pressedKeys);
-          break;
-        
-        case "Enter":
-          internalRef.current?.blur();
           break;
 
         default: {
