@@ -218,7 +218,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         )}
 
         <input
-          onKeyDown={onKeydown}
+          onKeyDownCapture={onKeydown}
           onFocus={onInputFocus}
           ref={setRefs}
           value={shortcut}
