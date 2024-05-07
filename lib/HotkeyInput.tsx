@@ -114,6 +114,10 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         case "Backspace":
           handleBackspace(pressedKeys);
           break;
+        
+        case "Enter":
+          internalRef.current?.blur();
+          break;
 
         default: {
           if (!isLetter(key) || letterKeys.length === 0) {
