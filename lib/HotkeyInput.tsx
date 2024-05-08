@@ -155,7 +155,19 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       : defaultShortcut || "";
 
     // restore to default shortcut
-    const onBlur = () => {
+    const onBlur = (e: React.FocusEvent, skipButtonCheck = false) => {
+      const isButton = e.relatedTarget instanceof HTMLButtonElement;
+      if (isButton && !skipButtonCheck) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setTimeout(() => {
+          onBlur(e, true);
+        }, 200);
+
+        return;
+      }
+
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
       onDismiss?.();
       setIsFocused(false);
