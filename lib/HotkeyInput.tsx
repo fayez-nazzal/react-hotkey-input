@@ -155,11 +155,12 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
       : defaultShortcut || "";
 
     // restore to default shortcut
-    const onBlur = (e: React.FocusEvent, skipButtonCheck = false) => {
+    const onBlur = (e: React.FocusEvent) => {
       const isButton = e.relatedTarget instanceof HTMLButtonElement;
-      if (isButton && !skipButtonCheck) {
+      if (isButton) {
         setTimeout(() => {
-          onBlur(e, true);
+          setIsFocused(false);
+          onDismiss?.();
         }, 200);
 
         return;
