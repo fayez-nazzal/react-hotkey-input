@@ -158,9 +158,6 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     const onBlur = (e: React.FocusEvent, skipButtonCheck = false) => {
       const isButton = e.relatedTarget instanceof HTMLButtonElement;
       if (isButton && !skipButtonCheck) {
-        e.preventDefault();
-        e.stopPropagation();
-
         setTimeout(() => {
           onBlur(e, true);
         }, 200);
