@@ -158,7 +158,7 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
     const onBlur = (e: React.FocusEvent) => {
       const isButton = e.relatedTarget instanceof HTMLButtonElement;
       if (isButton) {
-        clearPressedKeys();
+        setPressedKeys(new Set(defaultShortcut?.split("+") || []));
         setTimeout(() => {
           setIsFocused(false);
           onDismiss?.();
