@@ -166,15 +166,15 @@ export const HotkeyInput = forwardRef<RefType, IPropTypes>(
         return;
       }
 
+      setIsFocused(false);
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
       onDismiss?.();
-      setIsFocused(false);
     };
 
     useEffect(() => {
-      if (!hasPressedKeys) return;
+      if (!hasPressedKeys || !isFocused) return;
       onChange?.(shortcut);
-    }, [pressedKeys]);
+    }, [pressedKeys, isFocused]);
 
     useEffect(() => {
       setPressedKeys(new Set(defaultShortcut?.split("+") || []));
